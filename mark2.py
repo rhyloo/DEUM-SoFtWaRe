@@ -76,7 +76,7 @@ def main():
     canvas.draw()
     renderer = canvas.get_renderer()
     raw_data = renderer.tostring_rgb()
-    window = pygame.display.set_mode((1020, 800),RESIZABLE|DOUBLEBUF)
+    window = pygame.display.set_mode((1020, 800), RESIZABLE|DOUBLEBUF)
     #window = pygame.display.set_mode(display)
     screen = pygame.display.get_surface()
     size = canvas.get_width_height()
@@ -84,16 +84,21 @@ def main():
 
     run = True
     while run:
-        if textinput.update(pygame.event.get()):
+        events = pygame.event.get()
+        for event in events:
+            #print(event)
+            if event.type == pygame.QUIT:
+                run = False
+        if textinput.update(events):
             command_input = textinput.get_text()[3:]
             splited_command_input = re.split('[(,)\s]', command_input)
             print(splited_command_input)
             run = wihtd(splited_command_input)
             textinput.clear_text()
         pygame.draw.rect(screen,(0,0,255),(0,800-25,1020,25))
-        textinput.update(pygame.event.get())
         screen.blit(textinput.get_surface(), (0,800-22))
-        pygame.display.update()
-        clock.tick(30)
+        pygame.display.flip()
+        clock.tick(60)
+    pygame.quit()
 if __name__=="__main__":
     main()

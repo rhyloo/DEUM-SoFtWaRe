@@ -97,7 +97,7 @@ class TextInput:
                         + self.input_string[self.cursor_position + 1:]
                     )
 
-                elif event.key == pl.K_RETURN:
+                elif event.key == pl.K_RETURN or event.key == pl.K_KP_ENTER :
                     return True
 
                 elif event.key == pl.K_RIGHT:
@@ -210,3 +210,21 @@ if __name__ == "__main__":
 
         pygame.display.update()
         clock.tick(30)
+
+# K_KP0                 keypad 0
+# K_KP1                 keypad 1
+# K_KP2                 keypad 2
+# K_KP3                 keypad 3
+# K_KP4                 keypad 4
+# K_KP5                 keypad 5
+# K_KP6                 keypad 6
+# K_KP7                 keypad 7
+# K_KP8                 keypad 8
+# K_KP9                 keypad 9
+# K_KP_PERIOD   .       keypad period
+# K_KP_DIVIDE   /       keypad divide
+# K_KP_MULTIPLY *       keypad multiply
+# K_KP_MINUS    -       keypad minus
+# K_KP_PLUS     +       keypad plus
+# K_KP_ENTER    \r      keypad enter
+# K_KP_EQUALS   =       keypad equals
