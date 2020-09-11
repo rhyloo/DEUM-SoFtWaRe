@@ -13,8 +13,8 @@ from pygame.locals import *
 
 class Config(object):
     #Screen_Constants
-    screen_width = 1020
-    screen_height = 800
+    screen_width = 1920
+    screen_height = 1080
     screen_constant_distance = 25
     bottom_x_position = 0
     #Objects
@@ -23,7 +23,8 @@ class Config(object):
     display = (screen_width,screen_height)
     clock = pygame.time.Clock()
     title = "DEUM SoFtWaRe"
-    old_surface = pygame.Surface((500, 300))
+    old_surface_2D = pygame.Surface((0, 0))
+    old_surface_3D = pygame.Surface((0, 0))
     run = True
     BLUE_color = (0,0,255)
 
@@ -40,16 +41,20 @@ class Config(object):
         Config.display
         Config.clock
         Config.title
-        Config.old_surface
+        Config.old_surface_2D
+        Config.old_surface_3D
 
 class Point:
-    def __init__(self,point_x, point_y):
-        self.point_x = point_x
-        self.point_y = point_y
-    def draw(self):
-        fig = pylab.figure(figsize=[4, 4], dpi = 100)
+    coord_x = 0
+    coord_y = 0
+
+    def __init__(self):
+        pass
+    @classmethod
+    def draw_2D(self):
+        fig = pylab.figure(figsize=[px_inches(Config.screen_width)/2,px_inches(Config.screen_height)], dpi = 100)
         ax = fig.gca()
-        ax.plot(self.point_x,self.point_y, marker='o', markersize=3, color="red")
+        ax.plot(Point.coord_x,Point.coord_y, marker='o', markersize=3, color="red")
         ax.grid(True)
         #ax.axis([-75,75,50,-50])
         ax.axis('on')
@@ -64,21 +69,41 @@ class Point:
         surf = pygame.image.fromstring(raw_data, size, "RGB")
         screen.blit(surf, (0,0))
         Config.old_surface = surf #Almancenas el Surface iniciado en otra variable temporal.
+    @classmethod
+    def draw_3D(self):
+        fig = pylab.figure(figsize=[px_inches(Config.screen_width)/2,px_inches(Config.screen_height)], dpi = 100)
+        ax = plt.axes(projection='3d')
+        ax.scatter3D(Point.coord_x, Point.coord_y, 0 ,cmap='Greens');
+        ax.grid(True)
+        #ax.axis([-75,75,50,-50])
+        canvas = agg.FigureCanvasAgg(fig)
+        canvas.draw()
+        renderer = canvas.get_renderer()
+        raw_data = renderer.tostring_rgb()
+        screen = pygame.display.get_surface()
+        size = canvas.get_width_height()
 
+        surf = pygame.image.fromstring(raw_data, size, "RGB")
+        screen.blit(surf, ((Config.screen_width)/2,0))
+        Config.old_surface = surf #Almancenas el Surface iniciado en otra variable temporal.
+
+def px_inches(value):
+    return (value*0.01)
 
 def wihtd(splited_command_input):
     if splited_command_input[0] == "exit" or splited_command_input[0] == "Exit":
         Config.run = False
     elif (splited_command_input[0] == "point" or splited_command_input[0] == "Point" and (len(splited_command_input)>=6)):
-        point = draw_points(splited_command_input)
+        draw_points(splited_command_input)
     else:
         print("That command doesn\'t exists, please type Help for more information")
         print(len(splited_command_input)) #Borrar al final
     return Config.run
 
 def draw_points(splited_command_input):
-    point = Point(float(splited_command_input[2]),float(splited_command_input[3]))
-    point.draw()
+    [Point.coord_x, Point.coord_y] = [float(splited_command_input[2]), float(splited_command_input[3])]
+    Point.draw_2D()
+    Point.draw_3D()
 
 
 def main():
@@ -100,7 +125,10 @@ def main():
                 Config.screen_width = event.w
                 Config.screen_height = event.h
                 window = pygame.display.set_mode((event.w, event.h), HWSURFACE|RESIZABLE|DOUBLEBUF)
-                window.blit(Config.old_surface, (0,0))
+                Point.draw_2D()
+                Point.draw_3D()
+                window.blit(Config.old_surface_2D, (0,0))
+                window.blit(Config.old_surface_3D, ((Config.screen_width)/2,0))
 
         if Config.textinput.update(events):
             command_input = Config.textinput.get_text()[3:]
